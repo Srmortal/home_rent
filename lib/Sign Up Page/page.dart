@@ -35,57 +35,70 @@ class _RegisterPageState extends State<RegisterPage> {
   }
   @override
   Widget build(BuildContext context) {
+    final double screenWidth=MediaQuery.of(context).size.width;
+    final double screenHeight=MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Root.card_bg,
-      body: Container(
-        width: 600,
-        padding: EdgeInsets.symmetric(horizontal: 40,vertical: 80),
-        child: DefaultTextStyle(
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-            fontSize: rem(context,0.9)
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Create an account",style: TextStyle(
-                  fontSize: rem(context,1.8),
-                  fontWeight: FontWeight.w600
-                ),
+      body: LayoutBuilder(
+        builder: (context,constraints) {
+          return Container(
+            width: screenWidth,
+            height: screenHeight,
+            padding: EdgeInsets.symmetric(
+              horizontal: constraints.maxWidth*(40/screenWidth),
+              vertical: constraints.maxHeight*(80/screenHeight)
+            ),
+            child: DefaultTextStyle(
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+                fontSize: rem(context,0.9)
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: Expanded(
-                  child: RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: "Already have an account? ",style: TextStyle(
-                            color: Root.text_secondary,
-                          ),
-                        ),
-                        TextSpan(text: "Log in",
-                          style: TextStyle(
-                            color: Root.primary_color,
-                          ),
-                          recognizer: TapGestureRecognizer()..onTap=(){
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context)=>LoginPage(),
-                              )
-                            );
-                          }
+              child: SingleChildScrollView(
+                child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Create an account",style: TextStyle(
+                      fontSize: rem(context,1.8),
+                      fontWeight: FontWeight.w600
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: constraints.maxHeight*(10/screenHeight)),
+                    child: Expanded(
+                      child: RichText(
+                        text: TextSpan(
+                          style: TextStyle(fontSize: rem(context, 0.9),fontWeight: FontWeight.w600),
+                          children: [
+                            TextSpan(text: "Already have an account? ",style: TextStyle(
+                                color: Root.text_secondary,
+                              ),
+                            ),
+                            TextSpan(text: "Log in",
+                              style: TextStyle(
+                                color: Root.primary_color
+                              ),
+                              recognizer: TapGestureRecognizer()..onTap=(){
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context)=>LoginPage(),
+                                  )
+                                );
+                              }
+                            )
+                          ]
                         )
-                      ]
+                      )
                     )
-                  )
-                )
+                  ),
+                  RegisterForm(firstname_controller: fname,lastname_controller: lname,email_controller: email,password_controller: password,)
+                ],
               ),
-              RegisterForm(firstname_controller: fname,lastname_controller: lname,email_controller: email,password_controller: password)
-            ],
-          ),
-        ),
+              )
+            ),
+          );
+        }
       )
     );
   }

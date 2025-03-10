@@ -19,31 +19,37 @@ class _PasswordBarState extends State<PasswordBar>{
     if (!mounted) return;
 
     String password = widget.controller.text;
-    double level = 0;
-
-    if (password.length >= 6) level += 0.25;
-    if (RegExp(r'[A-Z]').hasMatch(password)) level += 0.25;
-    if (RegExp(r'[a-z]').hasMatch(password)) level += 0.25;
-    if (RegExp(r'[0-9]').hasMatch(password)) level += 0.25;
-    if (RegExp(r'[!@#\$%^&*(),.?":{}|<>]').hasMatch(password)) level += 0.25;
-
+    int level = 0;
+    final hasUpper=RegExp(r'[A-Z]').hasMatch(password)? 1:0;
+    final hasLower=RegExp(r'[a-z]').hasMatch(password)? 1:0;
+    final hasNumber=RegExp(r'[0-9]').hasMatch(password)? 1:0;
+    final hasSymbol=RegExp(r'[!@#\$%^&*(),.?":{}|<>]').hasMatch(password)? 1:0;
+    level=hasSymbol+hasNumber+hasLower+hasUpper;
     setState(() {
-      strength = level.clamp(0, 1);
+      if(level==0){
+        strength=0;
+      }
+      else if (level<=1) {
+        strength=0.3;
+      }
+      else if(level<=3){
+        strength=0.6;
+      }else{
+        strength=1.0;
+      }
     });
   }
   Color getStrengthColor() {
-    if(strength==0) return Colors.white;
-    if (strength <= 0.25) return Colors.red;
-    if (strength <= 0.5) return Colors.orange;
-    if (strength <= 0.75) return Colors.blue;
+    if(strength == 0) return Colors.white;
+    if (strength == 0.3) return Color(0xffff4d4d);
+    if (strength == 0.6) return Color(0xffffa500);
     return Colors.green;
   }
   String getStrengthText() {
-    if (strength == 1) return "Very Strong";
-    if (strength >= 0.75) return "Strong";
-    if (strength >= 0.5) return "Medium";
-    if (strength >= 0.25) return "Weak";
-    return strength==0? "Password Strength":"Too Weak";
+    if (strength == 0) return "Password Strength";// Too weak
+    if (strength == 0.3) return widget.controller.text.length<8? "Weak - too short":"Weak - add more variety"; // Weak
+    if (strength == 0.6) return "Medium - Getting better"; // Medium
+    return "Strong - Good job!"; // Strong
   }
   @override
   void dispose() {
@@ -55,12 +61,37 @@ class _PasswordBarState extends State<PasswordBar>{
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        LinearProgressIndicator(
-          value: strength,
-          backgroundColor: Color.fromARGB(255, 68, 68, 68),
-          color: getStrengthColor(),
-          minHeight: 8,
-          borderRadius: BorderRadius.circular(Root.broder_radius),
+        Container(
+          height: 8, // Fixed height for the bar
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(Root.broder_radius),
+            color: const Color.fromARGB(255, 68, 68, 68), // Background color
+          ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Stack(
+                children: [
+                  // Background Bar (always visible)
+                  Container(
+                    width: constraints.maxWidth,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(Root.broder_radius),
+                      color: const Color.fromARGB(255, 68, 68, 68), // Same as parent
+                    ),
+                  ),
+                  // Animated Progress Bar
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: constraints.maxWidth * strength,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(Root.broder_radius),
+                      color: getStrengthColor(),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
         SizedBox(height: 5),
         Text(

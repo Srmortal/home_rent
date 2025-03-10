@@ -13,16 +13,18 @@ class Text_Field extends StatefulWidget{
   final String? hintText;
   final String label,type;
   final TextEditingController controller;
-  const Text_Field({super.key,required this.label,this.hintText,this.type="Text",required this.controller});
+  final EdgeInsets padding;
+  const Text_Field({super.key,required this.label,this.hintText,this.type="Text",required this.controller, this.padding=const EdgeInsets.symmetric(vertical: 10)});
   @override
   State<StatefulWidget> createState() => Text_FieldState();
 }
 class Text_FieldState extends State<Text_Field>{
   final FocusNode _focusNode = FocusNode();
-  bool _hasError = false;
+  String? _error;
   void validate(){
+    if (_error != null) return;
     setState(() {
-      _hasError=widget.controller.text.isEmpty;
+      _error=widget.controller.text.isEmpty? '${widget.label} is required':null;
     });
   }
   @override
@@ -34,6 +36,12 @@ class Text_FieldState extends State<Text_Field>{
       }
     });
   }
+  void updateError(String? error){
+    print("Updating error for ${widget.label}: $error");
+    setState(() {
+      _error=error;
+    });
+  }
   @override
   void dispose() {
     _focusNode.dispose();
@@ -42,14 +50,14 @@ class Text_FieldState extends State<Text_Field>{
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10),
+      padding: widget.padding,
       child: TextFormField(
         focusNode: _focusNode,
         controller: widget.controller,
         decoration: InputDecoration(
           label: Text(widget.label),
           hintText: widget.hintText,
-          errorText: _hasError ? '${widget.label} is required' : null,
+          errorText: _error,
         ),
         keyboardType: type_getter(widget.type),
       ),
@@ -59,22 +67,30 @@ class Text_FieldState extends State<Text_Field>{
 }
 class PasswordField extends StatefulWidget{
   final TextEditingController controller;
-  const PasswordField({super.key,required this.controller});
+  final EdgeInsets padding;
+  const PasswordField({super.key,required this.controller,this.padding=const EdgeInsets.symmetric(vertical: 10)});
   @override
   State<StatefulWidget> createState() => PasswordFieldState();
 }
 class PasswordFieldState extends State<PasswordField>{
   bool ishidden=true;
   final FocusNode _focusNode = FocusNode();
-  bool _hasError = false;
+  String? _error;
   void togglevisibility(){
     setState(() {
       ishidden=!ishidden;
     });
   }
   void validate(){
+    if (_error != null) return;
     setState(() {
-      _hasError=widget.controller.text.isEmpty;
+      _error=widget.controller.text.isEmpty? 'Password is required' : null;
+    });
+  }
+  void updateError(String? error){
+    print("Updating error for Password: $error");
+    setState(() {
+      _error=error;
     });
   }
   @override
@@ -94,7 +110,7 @@ class PasswordFieldState extends State<PasswordField>{
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10),
+      padding: widget.padding,
       child: TextFormField(
         focusNode: _focusNode,
         controller: widget.controller,
@@ -102,7 +118,7 @@ class PasswordFieldState extends State<PasswordField>{
         decoration: InputDecoration(
           label: Text("Password"),
           hintText: "Enter your password",
-          errorText: _hasError ? 'Password is required' : null,
+          errorText: _error,
           suffixIcon: IconButton(
             onPressed: togglevisibility, 
             icon: Icon(ishidden? Icons.visibility: Icons.visibility_off,),

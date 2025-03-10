@@ -1,11 +1,5 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-Alignment getAlignmentFromDegrees(double degrees) {
-  double radians = degrees * (pi / 180);
-  double x = cos(radians);
-  double y = sin(radians);
-  return Alignment(-x, y);
-}
+import 'package:home_rent/helper.dart';
 class GradientButton extends StatelessWidget {
   final double degrees;
   final List<Color> colors;
@@ -17,6 +11,7 @@ class GradientButton extends StatelessWidget {
   final Offset shadowOffset;
   final double shadowBlurRadius;
   final double shadowSpreadRadius;
+  final EdgeInsets padding;
   const GradientButton({
     super.key,
     required this.child,
@@ -29,7 +24,8 @@ class GradientButton extends StatelessWidget {
     this.shadowColor = Colors.black54, 
     this.shadowOffset = const Offset(2, 2), 
     this.shadowBlurRadius = 4,
-    this.shadowSpreadRadius = 0.0
+    this.shadowSpreadRadius = 0.0, 
+    this.padding = const EdgeInsets.symmetric(horizontal: 32, vertical: 16)
   });
   @override
   Widget build(BuildContext context) {
@@ -55,7 +51,7 @@ class GradientButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent, // Make button background transparent
           shadowColor: Colors.transparent, // Remove shadow
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          padding: padding,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8), // Match container's border radius
           ),

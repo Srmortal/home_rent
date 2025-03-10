@@ -27,29 +27,41 @@ class _LoginPageState extends State<LoginPage> {
   }
   @override
   Widget build(BuildContext context) {
+    final double screenWidth=MediaQuery.of(context).size.width;
+    final double screenHeight=MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Root.card_bg,
-      body: Container(
-        width: 600,
-        padding: EdgeInsets.symmetric(horizontal: 40,vertical: 80),
-        child: DefaultTextStyle(
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-            fontSize: rem(context,0.9)
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Log into your account",style: TextStyle(
-                  fontSize: rem(context,1.8),
-                  fontWeight: FontWeight.w600
-                ),
+      body: LayoutBuilder(
+        builder: (context,constraints) {
+          return Container(
+            width: screenWidth,
+            height: screenHeight,
+            padding: EdgeInsets.symmetric(
+                horizontal: constraints.maxWidth*(40/screenWidth),
+                vertical: constraints.maxHeight*(80/screenHeight)
+            ),
+            child: DefaultTextStyle(
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+                fontSize: rem(context,0.9)
               ),
-              LoginForm(email_controller: email,password_controller: password,)
-            ],
-          ),
-        ),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Log into your account",style: TextStyle(
+                        fontSize: rem(context,1.8),
+                        fontWeight: FontWeight.w600
+                      ),
+                    ),
+                    LoginForm(email_controller: email,password_controller: password,)
+                  ],
+                ),
+              )
+            ),
+          );
+        }
       ),
     );
   }

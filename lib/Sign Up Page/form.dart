@@ -33,10 +33,12 @@ class _RegisterFormState extends State<RegisterForm>{
   }
   @override
   Widget build(BuildContext context) {
+    final double screenWidth=MediaQuery.of(context).size.width;
+    final double screenHeight=MediaQuery.of(context).size.height;
     return Form(
       key: _formKey,
       child: Padding(
-      padding: EdgeInsets.symmetric(vertical: 40),
+      padding: EdgeInsets.symmetric(vertical: screenHeight*0.04),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -65,8 +67,8 @@ class _RegisterFormState extends State<RegisterForm>{
                 controller: widget.password_controller,
                 key: _Password
               ),
-              SizedBox(height: 10,),
-              PasswordBar(controller: widget.password_controller,)
+              PasswordBar(controller: widget.password_controller,),
+              SizedBox(height: screenHeight*0.01,),
             ],
           ),
           Row(
@@ -93,24 +95,42 @@ class _RegisterFormState extends State<RegisterForm>{
                     ]
                   )
                 )
-              )
+              ),
             ],
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 0,vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: 0,vertical: screenHeight*0.01),
             child: GradientButton(
               degrees: 0,
               colors: [Root.primary_color,Color(0xff2575fc)],
-              minimumSize: Size(350,55),
-              maximumSize: Size(650, 110),
+              minimumSize: Size(screenWidth,screenHeight*0.07),
+              maximumSize: Size(screenWidth, screenHeight*0.12),
               borderRadius: BorderRadius.circular(8),
-              onPressed: (){
+              onPressed: () async{
                 _validateForm();
                 if(widget.firstname_controller.text.isEmpty||
                   widget.lastname_controller.text.isEmpty||
                   widget.email_controller.text.isEmpty||
                   widget.password_controller.text.isEmpty){
                   return;
+                }
+                var errors=await signup(
+                  widget.firstname_controller.text, 
+                  widget.lastname_controller.text, 
+                  widget.email_controller.text, 
+                  widget.password_controller.text
+                );
+                setState(() {
+                  print("Received errors: $errors");
+                  _FName.currentState?.updateError(errors.containsKey('firstname') ? errors['firstname'] : null);
+                  _LName.currentState?.updateError(errors.containsKey('lastname') ? errors['lastname'] : null);
+                  _Email.currentState?.updateError(errors.containsKey('email') ? errors['email'] : null);
+                  _Password.currentState?.updateError(errors.containsKey('password') ? errors['password'] : null);
+                });
+                if(errors.isEmpty){
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Sign Up success'))
+                  );
                 }
               },
               shadowColor: Color.fromRGBO(106, 17, 203, 0.3),
