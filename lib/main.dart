@@ -1,10 +1,16 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:home_rent/Log%20in%20Page/page.dart';
 import 'package:home_rent/Sign%20Up%20Page/form.dart';
+import 'package:home_rent/firebase_options.dart';
 import 'root.dart';
 import 'helper.dart';
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MainApp());
 }
 class MainApp extends StatefulWidget {
@@ -114,29 +120,27 @@ class _MainAppState extends State<MainApp> {
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: constraints.maxHeight*(10/screenHeight)),
-                      child: Expanded(
-                        child: RichText(
-                          text: TextSpan(
-                            style: TextStyle(fontSize: rem(context, 0.9),fontWeight: FontWeight.w600),
-                            children: [
-                              TextSpan(text: "Already have an account? ",style: TextStyle(
-                                  color: Root.text_secondary,
-                                ),
+                      child: RichText(
+                        text: TextSpan(
+                          style: TextStyle(fontSize: rem(context, 0.9),fontWeight: FontWeight.w600),
+                          children: [
+                            TextSpan(text: "Already have an account? ",style: TextStyle(
+                                color: Root.text_secondary,
                               ),
-                              TextSpan(text: "Log in",
-                                style: TextStyle(
-                                  color: Root.primary_color
-                                ),
-                                recognizer: TapGestureRecognizer()..onTap=(){
-                                  navigatorKey.currentState?.push(
-                                    MaterialPageRoute(
-                                      builder: (context)=>LoginPage(),
-                                    )
-                                  );
-                                }
-                              )
-                            ]
-                          )
+                            ),
+                            TextSpan(text: "Log in",
+                              style: TextStyle(
+                                color: Root.primary_color
+                              ),
+                              recognizer: TapGestureRecognizer()..onTap=(){
+                                navigatorKey.currentState?.push(
+                                  MaterialPageRoute(
+                                    builder: (context)=>LoginPage(),
+                                  )
+                                );
+                              }
+                            )
+                          ]
                         )
                       )
                     ),

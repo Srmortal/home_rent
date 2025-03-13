@@ -1,9 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:home_rent/gradient.dart';
-import 'package:home_rent/helper.dart';
 import 'package:home_rent/main.dart';
 import 'package:home_rent/root.dart';
 import '../text_field.dart';
+import 'package:http/http.dart' as http;
 class LoginForm extends StatefulWidget{
   final TextEditingController email_controller,password_controller;
   const LoginForm({super.key,required this.email_controller,required this.password_controller});
@@ -17,6 +18,43 @@ class _LoginFormState extends State<LoginForm>{
   void _validateForm(){
     _Email.currentState?.validate();
     _Password.currentState?.validate();
+  }
+  Future<Map<String,String?>> login() async{
+    final url = Uri.parse('https://home-rent.runasp.net/auth/sign-in');
+    final response = await http.post(
+      url,
+      headers: {"content-type":"application/json"},
+      body: jsonEncode({'email': widget.email_controller.text,'password': widget.password_controller.text})
+    );
+    if (response.statusCode == 200) {
+      print('login success');
+      return {};
+    } else {
+      final responseData=jsonDecode(response.body);
+      Map<String, String?> extractedErrors = {};
+      if (responseData is Map<String, dynamic> && responseData.containsKey('errors')) {
+        final errors = responseData['errors'];
+
+        if (errors is Map<String, dynamic>) {
+          // Case: Validation errors (400 Bad Request)
+          errors.forEach((key, value) {
+            if (value is List && value.isNotEmpty) {
+              extractedErrors[key] = value.join(", "); // Convert list to string
+            }
+          });
+        } else if (errors is List) {
+          // Case: General errors (401 Unauthorized)
+          String combinedErrors = errors.join("\n");
+          if (combinedErrors.contains("email")||combinedErrors.contains('password')) {
+            if(combinedErrors.contains("email"))extractedErrors['email'] = "Invalid email or password.";
+            if(combinedErrors.contains("password"))extractedErrors['password'] = "Invalid email or password.";
+          } else {
+            extractedErrors['general'] = combinedErrors;
+          }
+        }
+      }
+      return extractedErrors;
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -54,12 +92,8 @@ class _LoginFormState extends State<LoginForm>{
                         widget.password_controller.text.isEmpty){
                         return;
                       }
-                      var errors=await login(
-                        widget.email_controller.text, 
-                        widget.password_controller.text
-                      );
+                      var errors=await login();
                       setState(() {
-                        print("Received errors: $errors");
                         _Email.currentState?.updateError(errors.containsKey('email') ? errors['email'] : null);
                         _Password.currentState?.updateError(errors.containsKey('password') ? errors['password'] : null);
                         if (errors['general'] != null) {

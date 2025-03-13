@@ -64,8 +64,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: constraints.maxHeight*(10/screenHeight)),
-                    child: Expanded(
+                      padding: EdgeInsets.symmetric(vertical: constraints.maxHeight*(10/screenHeight)),
                       child: RichText(
                         text: TextSpan(
                           style: TextStyle(fontSize: rem(context, 0.9),fontWeight: FontWeight.w600),
@@ -90,8 +89,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           ]
                         )
                       )
-                    )
-                  ),
+                    ),
                   RegisterForm(firstname_controller: fname,lastname_controller: lname,email_controller: email,password_controller: password,)
                 ],
               ),

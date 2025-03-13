@@ -1,7 +1,7 @@
 // ignore_for_file: camel_case_types
 
 import 'package:flutter/material.dart';
-
+import 'package:home_rent/helper.dart';
 // ignore: non_constant_identifier_names
 TextInputType type_getter(String type){
   if (type == "email") return TextInputType.emailAddress;
@@ -14,7 +14,16 @@ class Text_Field extends StatefulWidget{
   final String label,type;
   final TextEditingController controller;
   final EdgeInsets padding;
-  const Text_Field({super.key,required this.label,this.hintText,this.type="Text",required this.controller, this.padding=const EdgeInsets.symmetric(vertical: 10)});
+  final double? fontSize;
+  const Text_Field({
+    super.key,
+    required this.label,
+    this.hintText,
+    this.type="Text",
+    required this.controller, 
+    this.padding=const EdgeInsets.symmetric(vertical: 10), 
+    this.fontSize
+  });
   @override
   State<StatefulWidget> createState() => Text_FieldState();
 }
@@ -37,7 +46,6 @@ class Text_FieldState extends State<Text_Field>{
     });
   }
   void updateError(String? error){
-    print("Updating error for ${widget.label}: $error");
     setState(() {
       _error=error;
     });
@@ -52,6 +60,7 @@ class Text_FieldState extends State<Text_Field>{
     return Padding(
       padding: widget.padding,
       child: TextFormField(
+        style: TextStyle(fontSize: widget.fontSize ?? rem(context, 0.9)),
         focusNode: _focusNode,
         controller: widget.controller,
         decoration: InputDecoration(
@@ -68,7 +77,13 @@ class Text_FieldState extends State<Text_Field>{
 class PasswordField extends StatefulWidget{
   final TextEditingController controller;
   final EdgeInsets padding;
-  const PasswordField({super.key,required this.controller,this.padding=const EdgeInsets.symmetric(vertical: 10)});
+  final double? fontSize;
+  const PasswordField({
+    super.key,
+    required this.controller,
+    this.padding=const EdgeInsets.symmetric(vertical: 10), 
+    this.fontSize
+  });
   @override
   State<StatefulWidget> createState() => PasswordFieldState();
 }
@@ -88,7 +103,6 @@ class PasswordFieldState extends State<PasswordField>{
     });
   }
   void updateError(String? error){
-    print("Updating error for Password: $error");
     setState(() {
       _error=error;
     });
@@ -112,6 +126,7 @@ class PasswordFieldState extends State<PasswordField>{
     return Padding(
       padding: widget.padding,
       child: TextFormField(
+        style: TextStyle(fontSize: widget.fontSize ?? rem(context, 0.9)),
         focusNode: _focusNode,
         controller: widget.controller,
         obscureText: ishidden,

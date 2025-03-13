@@ -122,10 +122,10 @@ class _RegisterFormState extends State<RegisterForm>{
                 );
                 setState(() {
                   print("Received errors: $errors");
-                  _FName.currentState?.updateError(errors.containsKey('firstname') ? errors['firstname'] : null);
-                  _LName.currentState?.updateError(errors.containsKey('lastname') ? errors['lastname'] : null);
-                  _Email.currentState?.updateError(errors.containsKey('email') ? errors['email'] : null);
-                  _Password.currentState?.updateError(errors.containsKey('password') ? errors['password'] : null);
+                  _FName.currentState?.updateError(errors.containsKey('FirstName') ? 'First Name is between 3 and 100' : null);
+                  _LName.currentState?.updateError(errors.containsKey('LastName') ? 'Last Name is between 3 and 100' : null);
+                  _Email.currentState?.updateError(errors.containsKey('Email') ? 'Invalid Email' : null);
+                  _Password.currentState?.updateError(errors.containsKey('Password') ? 'Invalid Password' : null);
                 });
                 if(errors.isEmpty){
                   ScaffoldMessenger.of(context).showSnackBar(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_rent/helper.dart';
-class GradientButton extends StatelessWidget {
+class GradientButton extends StatefulWidget {
   final double degrees;
   final List<Color> colors;
   final Widget? child;
@@ -27,38 +27,52 @@ class GradientButton extends StatelessWidget {
     this.shadowSpreadRadius = 0.0, 
     this.padding = const EdgeInsets.symmetric(horizontal: 32, vertical: 16)
   });
+  
+  @override
+  State<StatefulWidget> createState() => _GradientButtonState();
+  
+}
+class _GradientButtonState extends State<GradientButton> {
+  bool is_hovered=false;
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: colors,
-          begin: getAlignmentFromDegrees(degrees),
-          end: getAlignmentFromDegrees(degrees+180)
+          colors: widget.colors,
+          begin: getAlignmentFromDegrees(widget.degrees),
+          end: getAlignmentFromDegrees(widget.degrees+180)
         ),
-        borderRadius: borderRadius,
+        borderRadius: widget.borderRadius,
         boxShadow: [
           BoxShadow(
-            color: shadowColor,
-            offset: shadowOffset,
-            spreadRadius: shadowSpreadRadius,
-            blurRadius: shadowBlurRadius
+            color: widget.shadowColor,
+            offset: widget.shadowOffset,
+            spreadRadius: widget.shadowSpreadRadius,
+            blurRadius: widget.shadowBlurRadius
           )
         ]
       ),
+      duration: Duration(milliseconds: 150),
+      transform: Matrix4.translationValues(0, is_hovered ? -2 : 0, 0),
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: widget.onPressed, 
+        onHover: (value) {
+          setState(() {
+            is_hovered=value;
+          });
+        },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent, // Make button background transparent
-          shadowColor: Colors.transparent, // Remove shadow
-          padding: padding,
+          backgroundColor: is_hovered? const Color.fromARGB(80, 15, 15, 15): Colors.transparent, // Make button background transparent
+          shadowColor: is_hovered? const Color.fromARGB(67, 0, 0, 0): Colors.transparent, // Remove shadow
+          padding: widget.padding,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8), // Match container's border radius
           ),
-          maximumSize: maximumSize,
-          minimumSize: minimumSize
-        ), 
-        child: child,
+          maximumSize: widget.maximumSize,
+          minimumSize: widget.minimumSize
+        ),
+        child: widget.child,
       ),
     );
   }

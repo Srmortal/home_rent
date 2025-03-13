@@ -76,44 +76,6 @@ class _HoverEffectState extends State<HoverEffect> {
   }
 }
 */
-Future<Map<String,String?>> login(String email,String password) async{
-  final url = Uri.parse('https://home-rent.runasp.net/auth/sign-in');
-  final response = await http.post(
-    url,
-    headers: {"content-type":"application/json"},
-    body: jsonEncode({'email': email,'password': password})
-  );
-  print("Raw Response Body: ${response.body}");
-  if (response.statusCode == 200) {
-    print('login success');
-    return {};
-  } else {
-    final responseData=jsonDecode(response.body);
-    Map<String, String?> extractedErrors = {};
-    if (responseData is Map<String, dynamic> && responseData.containsKey('errors')) {
-      final errors = responseData['errors'];
-
-      if (errors is Map<String, dynamic>) {
-        // Case: Validation errors (400 Bad Request)
-        errors.forEach((key, value) {
-          if (value is List && value.isNotEmpty) {
-            extractedErrors[key] = value.join(", "); // Convert list to string
-          }
-        });
-      } else if (errors is List) {
-        // Case: General errors (401 Unauthorized)
-        String combinedErrors = errors.join("\n");
-        if (combinedErrors.contains("email")||combinedErrors.contains('password')) {
-          if(combinedErrors.contains("email"))extractedErrors['email'] = "Invalid email or password. Please try again.";
-          if(combinedErrors.contains("password"))extractedErrors['password']="Invalid email or password. Please try again.";
-        } else {
-          extractedErrors['general'] = combinedErrors;
-        }
-      }
-    }
-    return extractedErrors;
-  }
-}
 Future<Map<String,String?>> signup(String firstName,String lastName,String email,String password) async{
   final url = Uri.parse('https://home-rent.runasp.net/auth/sign-up');
   final response = await http.post(
