@@ -1,9 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:home_rent/Log%20in%20Page/page.dart';
-import 'package:home_rent/Sign%20Up%20Page/form.dart';
 import 'package:home_rent/firebase_options.dart';
+import 'package:home_rent/home_screen.dart';
 import 'root.dart';
 import 'helper.dart';
 Future<void> main() async {
@@ -52,7 +50,7 @@ class _MainAppState extends State<MainApp> {
       theme: ThemeData(
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: Root.input_bg,
+          fillColor: Root.input_bg_dark,
           labelStyle: TextStyle(color: Colors.white,fontWeight: FontWeight.w500,fontSize: rem(context, 0.9)),
           hintStyle: TextStyle(color: Root.text_secondary,fontSize: rem(context, 0.9)),
           errorStyle: TextStyle(color: Root.error_color,fontSize: rem(context, 0.7)),
@@ -62,7 +60,7 @@ class _MainAppState extends State<MainApp> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(Root.broder_radius),
-            borderSide: BorderSide(color: Root.primary_color,width: 2.5)
+            borderSide: BorderSide(color: Root.primary_color_dark,width: 2.5)
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(Root.broder_radius),
@@ -73,9 +71,9 @@ class _MainAppState extends State<MainApp> {
             borderSide: BorderSide(color: Colors.red, width: 2.5), // Focused error border
           ),
         ),
-        primaryColor: Root.primary_color,
+        primaryColor: Root.primary_color_dark,
         fontFamily: 'sans-serif',
-        cardColor: Root.card_bg,
+        cardColor: Root.card_bg_dark,
         textTheme: TextTheme(
           bodyMedium: TextStyle(color: Colors.white),
           bodyLarge: TextStyle(color: Colors.white),
@@ -88,71 +86,11 @@ class _MainAppState extends State<MainApp> {
               borderRadius: BorderRadius.circular(Root.broder_radius),
             ),
             foregroundColor: Colors.white,
-            backgroundColor: Root.primary_color
+            backgroundColor: Root.primary_color_dark
           )
         )
       ),
-      home: Scaffold(
-        backgroundColor: Root.card_bg,
-        body: LayoutBuilder(
-          builder: (context,constraints) {
-            return Container(
-              width: screenWidth,
-              height: screenHeight,
-              padding: EdgeInsets.symmetric(
-                horizontal: constraints.maxWidth*(40/screenWidth),
-                vertical: constraints.maxHeight*(80/screenHeight)
-              ),
-              child: DefaultTextStyle(
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: rem(context,0.9)
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Create an account",style: TextStyle(
-                        fontSize: rem(context,1.8),
-                        fontWeight: FontWeight.w600
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: constraints.maxHeight*(10/screenHeight)),
-                      child: RichText(
-                        text: TextSpan(
-                          style: TextStyle(fontSize: rem(context, 0.9),fontWeight: FontWeight.w600),
-                          children: [
-                            TextSpan(text: "Already have an account? ",style: TextStyle(
-                                color: Root.text_secondary,
-                              ),
-                            ),
-                            TextSpan(text: "Log in",
-                              style: TextStyle(
-                                color: Root.primary_color
-                              ),
-                              recognizer: TapGestureRecognizer()..onTap=(){
-                                navigatorKey.currentState?.push(
-                                  MaterialPageRoute(
-                                    builder: (context)=>LoginPage(),
-                                  )
-                                );
-                              }
-                            )
-                          ]
-                        )
-                      )
-                    ),
-                    RegisterForm(firstname_controller: fname,lastname_controller: lname,email_controller: email,password_controller: password,)
-                  ],
-                ),
-                )
-              ),
-            );
-          }
-        )
-        ),
+      home: HomePage()
       );
   }
 }

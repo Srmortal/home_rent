@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
     final double screenWidth=MediaQuery.of(context).size.width;
     final double screenHeight=MediaQuery.of(context).size.height;
     return Scaffold(
-      backgroundColor: Root.card_bg,
+      backgroundColor: Root.card_bg_dark,
       body: LayoutBuilder(
         builder: (context,constraints) {
           return Container(

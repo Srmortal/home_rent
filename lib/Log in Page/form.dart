@@ -30,30 +30,7 @@ class _LoginFormState extends State<LoginForm>{
       print('login success');
       return {};
     } else {
-      final responseData=jsonDecode(response.body);
-      Map<String, String?> extractedErrors = {};
-      if (responseData is Map<String, dynamic> && responseData.containsKey('errors')) {
-        final errors = responseData['errors'];
-
-        if (errors is Map<String, dynamic>) {
-          // Case: Validation errors (400 Bad Request)
-          errors.forEach((key, value) {
-            if (value is List && value.isNotEmpty) {
-              extractedErrors[key] = value.join(", "); // Convert list to string
-            }
-          });
-        } else if (errors is List) {
-          // Case: General errors (401 Unauthorized)
-          String combinedErrors = errors.join("\n");
-          if (combinedErrors.contains("email")||combinedErrors.contains('password')) {
-            if(combinedErrors.contains("email"))extractedErrors['email'] = "Invalid email or password.";
-            if(combinedErrors.contains("password"))extractedErrors['password'] = "Invalid email or password.";
-          } else {
-            extractedErrors['general'] = combinedErrors;
-          }
-        }
-      }
-      return extractedErrors;
+      return {'email':"Invalid Email or Password.","password":"Invalid Email or Password."};
     }
   }
   @override
@@ -82,7 +59,7 @@ class _LoginFormState extends State<LoginForm>{
                 children: [
                   GradientButton(
                     degrees: 0,
-                    colors: [Root.primary_color,Color(0xff2575fc)],
+                    colors: [Root.primary_color_dark,Color(0xff2575fc)],
                     borderRadius: BorderRadius.circular(8),
                     minimumSize: Size(screenWidth,screenHeight*0.07),
                     maximumSize: Size(screenWidth, screenHeight*0.12),
@@ -96,12 +73,6 @@ class _LoginFormState extends State<LoginForm>{
                       setState(() {
                         _Email.currentState?.updateError(errors.containsKey('email') ? errors['email'] : null);
                         _Password.currentState?.updateError(errors.containsKey('password') ? errors['password'] : null);
-                        if (errors['general'] != null) {
-                          // Show a general error message (e.g., invalid credentials)
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(errors['general']!)),
-                          );
-                        }
                       });
                       if(errors.isEmpty){
                         ScaffoldMessenger.of(context).showSnackBar(

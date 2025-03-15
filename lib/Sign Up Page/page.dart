@@ -38,7 +38,7 @@ class _RegisterPageState extends State<RegisterPage> {
     final double screenWidth=MediaQuery.of(context).size.width;
     final double screenHeight=MediaQuery.of(context).size.height;
     return Scaffold(
-      backgroundColor: Root.card_bg,
+      backgroundColor: Root.card_bg_dark,
       body: LayoutBuilder(
         builder: (context,constraints) {
           return Container(
@@ -75,7 +75,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                             TextSpan(text: "Log in",
                               style: TextStyle(
-                                color: Root.primary_color
+                                color: Root.primary_color_dark
                               ),
                               recognizer: TapGestureRecognizer()..onTap=(){
                                 Navigator.push(
