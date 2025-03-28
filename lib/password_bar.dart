@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:home_rent/root.dart';
+import 'package:home_rent/helper.dart';
 
 class PasswordBar extends StatefulWidget{
   final TextEditingController controller;
@@ -46,10 +46,10 @@ class _PasswordBarState extends State<PasswordBar>{
     return Colors.green;
   }
   String getStrengthText() {
-    if (strength == 0) return "Password Strength";// Too weak
-    if (strength == 0.3) return widget.controller.text.length<8? "Weak - too short":"Weak - add more variety"; // Weak
-    if (strength == 0.6) return "Medium - Getting better"; // Medium
-    return "Strong - Good job!"; // Strong
+    if (strength == 0) return "Password Strength";
+    if (strength == 0.3) return widget.controller.text.length<8? "Weak - too short":"Weak - add more variety";
+    if (strength == 0.6) return "Medium - Getting better";
+    return "Strong - Good job!";
   }
   @override
   void dispose() {
@@ -62,24 +62,22 @@ class _PasswordBarState extends State<PasswordBar>{
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          height: 8, // Fixed height for the bar
+          height: 8,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(Root.broder_radius),
-            color: const Color.fromARGB(255, 68, 68, 68), // Background color
+            color: const Color.fromARGB(255, 68, 68, 68),
           ),
           child: LayoutBuilder(
             builder: (context, constraints) {
               return Stack(
                 children: [
-                  // Background Bar (always visible)
                   Container(
                     width: constraints.maxWidth,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(Root.broder_radius),
-                      color: const Color.fromARGB(255, 68, 68, 68), // Same as parent
+                      color: const Color.fromARGB(255, 68, 68, 68),
                     ),
                   ),
-                  // Animated Progress Bar
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
                     width: constraints.maxWidth * strength,
@@ -93,10 +91,14 @@ class _PasswordBarState extends State<PasswordBar>{
             },
           ),
         ),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
         Text(
           getStrengthText(),
-          style: TextStyle(fontWeight: FontWeight.bold, color: getStrengthColor()),
+          style: TextStyle(
+            fontSize: rem(context, 1),
+            fontWeight: FontWeight.bold, 
+            color: getStrengthColor()
+          ),
         ),
       ],
     );

@@ -53,7 +53,7 @@ class _GradientButtonState extends State<GradientButton> {
           )
         ]
       ),
-      duration: Duration(milliseconds: 150),
+      duration: const Duration(milliseconds: 150),
       transform: Matrix4.translationValues(0, is_hovered ? -2 : 0, 0),
       child: ElevatedButton(
         onPressed: widget.onPressed, 

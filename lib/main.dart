@@ -1,15 +1,41 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:home_rent/Sign%20Up%20Page/page.dart';
+import 'package:home_rent/providers/auth_provider.dart';
+import 'package:home_rent/providers/fav_provider.dart';
 import 'package:home_rent/firebase_options.dart';
-import 'package:home_rent/home_screen.dart';
-import 'root.dart';
+import 'package:home_rent/Home%20Page/home_screen.dart';
+import 'package:home_rent/providers/appartment_provider.dart';
+import 'package:home_rent/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 import 'helper.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MainApp());
+  final authProvider=AuthProvider();
+  await authProvider.loadToken();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (BuildContext context) => authProvider,
+        ),
+        ChangeNotifierProxyProvider<AuthProvider,UserProvider>(
+          create: (BuildContext context) => UserProvider(authProvider), 
+          update: (context,auth,user) => user!..updateAuth(auth)
+        ),
+        ChangeNotifierProvider(
+          create: (BuildContext context) => AppartmentProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (BuildContext context) => FavoriteProvider(),
+        )
+      ],
+      child: const MainApp()
+    )
+  );
 }
 class MainApp extends StatefulWidget {
   const MainApp({super.key});
@@ -18,33 +44,9 @@ class MainApp extends StatefulWidget {
 }
 class _MainAppState extends State<MainApp> {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-  late final TextEditingController email;
-  late final TextEditingController password;
-  late final TextEditingController fname;
-  late final TextEditingController lname;
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize controllers once
-    email = TextEditingController();
-    password = TextEditingController();
-    fname = TextEditingController();
-    lname = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    email.dispose();
-    password.dispose();
-    fname.dispose();
-    lname.dispose();
-    super.dispose();
-  }
   @override
   Widget build(BuildContext context) {
-    final double screenWidth=MediaQuery.of(context).size.width;
-    final double screenHeight=MediaQuery.of(context).size.height;
+    final authProvider=Provider.of<AuthProvider>(context);
     return MaterialApp(
       navigatorKey: navigatorKey,
       theme: ThemeData(
@@ -75,9 +77,15 @@ class _MainAppState extends State<MainApp> {
         fontFamily: 'sans-serif',
         cardColor: Root.card_bg_dark,
         textTheme: TextTheme(
-          bodyMedium: TextStyle(color: Colors.white),
-          bodyLarge: TextStyle(color: Colors.white),
-          bodySmall: TextStyle(color: Colors.white)
+          bodyMedium: TextStyle(
+            color: const Color.fromARGB(255, 255, 255, 255)
+          ),
+          bodyLarge: TextStyle(color: Root.text_secondary),
+          bodySmall: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: rem(context, 0.9),
+            color: Root.text_secondary
+          )
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
@@ -88,9 +96,14 @@ class _MainAppState extends State<MainApp> {
             foregroundColor: Colors.white,
             backgroundColor: Root.primary_color_dark
           )
+        ),
+        iconButtonTheme: IconButtonThemeData(
+          style: IconButton.styleFrom(
+            foregroundColor: Colors.white54
+          )
         )
       ),
-      home: HomePage()
-      );
+      home: authProvider.isAuth? HomePage():RegisterPage()  
+    );
   }
 }
