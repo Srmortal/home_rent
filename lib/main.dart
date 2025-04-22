@@ -16,6 +16,8 @@ Future<void> main() async {
   );
   final authProvider=AuthProvider();
   await authProvider.loadToken();
+  final userProvider=UserProvider(authProvider);
+  await userProvider.init();
   runApp(
     MultiProvider(
       providers: [
@@ -23,7 +25,7 @@ Future<void> main() async {
           create: (BuildContext context) => authProvider,
         ),
         ChangeNotifierProxyProvider<AuthProvider,UserProvider>(
-          create: (BuildContext context) => UserProvider(authProvider), 
+          create: (BuildContext context) => userProvider, 
           update: (context,auth,user) => user!..updateAuth(auth)
         ),
         ChangeNotifierProvider(
@@ -48,6 +50,7 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     final authProvider=Provider.of<AuthProvider>(context);
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
       theme: ThemeData(
         inputDecorationTheme: InputDecorationTheme(
@@ -77,10 +80,14 @@ class _MainAppState extends State<MainApp> {
         fontFamily: 'sans-serif',
         cardColor: Root.card_bg_dark,
         textTheme: TextTheme(
+          titleMedium: TextStyle(color: Colors.white),
           bodyMedium: TextStyle(
-            color: const Color.fromARGB(255, 255, 255, 255)
+            color: Colors.white
           ),
-          bodyLarge: TextStyle(color: Root.text_secondary),
+          bodyLarge: TextStyle(
+            fontSize: rem(context, 0.9),
+            color: Colors.white
+          ),
           bodySmall: TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: rem(context, 0.9),

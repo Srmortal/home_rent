@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:home_rent/Home%20Page/home_tab.dart';
+import 'package:home_rent/Sign%20Up%20Page/page.dart';
 import 'package:home_rent/custom_icon_button.dart';
+import 'package:home_rent/providers/auth_provider.dart';
 import 'package:home_rent/providers/fav_provider.dart';
 import 'package:home_rent/helper.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_profile_picture/flutter_profile_picture.dart';
+import '../providers/user_provider.dart' show UserProvider;
 
 class HomePage extends StatefulWidget{
   const HomePage({super.key});
@@ -74,6 +78,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin{
   @override
   Widget build(BuildContext context) {
     final favoriteProvider = Provider.of<FavoriteProvider>(context);
+    final authProvider = Provider.of<AuthProvider>(context);
+    final userProvider=Provider.of<UserProvider>(context);
     final double screenWidth=MediaQuery.of(context).size.width;
     final double screenHeight=MediaQuery.of(context).size.height;
     return Scaffold(
@@ -86,9 +92,17 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin{
         ],
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: const CircleAvatar(
+          child: userProvider.profileImage==null? 
+          CircleAvatar(
             radius: 20,
-            backgroundImage: NetworkImage('https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=600'),
+            backgroundColor: getRandomColor(userProvider.Email),
+            child: Icon(Icons.person,color: Colors.white,),
+          ):
+          ProfilePicture(
+            name: userProvider.firstName!, 
+            radius: 20, 
+            fontsize: 16,
+            img: userProvider.profileImage,
           ),
         ),
         bottom: const PreferredSize(
@@ -118,12 +132,21 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin{
                 }
               ),
             ):const Center(child: Text('No home in wishlist'),),
-            const Center(child: Text('Account Tab is in works')),
+            Center(child: TextButton(
+              onPressed: () async{
+                await authProvider.clearAll();
+                await Navigator.push(
+                  context, 
+                  MaterialPageRoute(
+                    builder: (context)=>RegisterPage()
+                  )
+                );
+              },
+              child: Text('Account Tab is in works')
+              )
+            ),
           ]
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){}
       ),
       bottomNavigationBar: Container(
         height: screenHeight*0.1,

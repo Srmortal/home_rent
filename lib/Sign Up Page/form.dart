@@ -8,11 +8,9 @@ import 'package:home_rent/providers/auth_provider.dart';
 import 'package:home_rent/providers/user_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import '../text_field.dart';
+//import '../text_field.dart';
 class RegisterForm extends StatefulWidget{
-  // ignore: non_constant_identifier_names
   final TextEditingController email_controller,password_controller,firstname_controller,lastname_controller;
-  // ignore: non_constant_identifier_names
   const RegisterForm({super.key,required this.email_controller,required this.firstname_controller,required this.lastname_controller,required this.password_controller});
   @override
   State<StatefulWidget> createState() => _RegisterFormState();
@@ -20,15 +18,123 @@ class RegisterForm extends StatefulWidget{
 class _RegisterFormState extends State<RegisterForm>{
   bool isChecked=false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final GlobalKey<Text_FieldState> _Email=GlobalKey();
-  final GlobalKey<Text_FieldState> _Password=GlobalKey();
-  final GlobalKey<Text_FieldState> _FName=GlobalKey();
-  final GlobalKey<Text_FieldState> _LName=GlobalKey();
+  // final GlobalKey<Text_FieldState> _Email=GlobalKey();
+  // final GlobalKey<Text_FieldState> _Password=GlobalKey();
+  // final GlobalKey<Text_FieldState> _FName=GlobalKey();
+  // final GlobalKey<Text_FieldState> _LName=GlobalKey();
+  late FocusNode _emailFocusNode,_passwordFocusNode,_fnameFocusNode,_lnameFocusNode;
+  String? _emailError,_passwordError,_fnameError,_lnameError;
+  bool hidden=true;
+  @override
+  void initState(){
+    super.initState();
+    _lnameFocusNode=FocusNode();
+    _fnameFocusNode=FocusNode();
+    _emailFocusNode=FocusNode();
+    _passwordFocusNode=FocusNode();
+    _fnameFocusNode.addListener((){
+      if (!_fnameFocusNode.hasFocus) {
+        _validateFname();
+      }
+    });
+    _lnameFocusNode.addListener((){
+      if(!_lnameFocusNode.hasFocus){
+        _validateLname();
+      }
+    });
+    _emailFocusNode.addListener((){
+      if (!_emailFocusNode.hasFocus) {
+        _validateEmail();
+      }
+    });
+    _passwordFocusNode.addListener((){
+      if(!_passwordFocusNode.hasFocus){
+        _validatePassword();
+      }
+    });
+  }
   void _validateForm(){
-    _Email.currentState?.validate();
-    _Password.currentState?.validate();
-    _FName.currentState?.validate();
-    _LName.currentState?.validate();
+    _validateEmail();
+    _validateFname();
+    _validateLname();
+    _validatePassword();
+    // _Email.currentState?.validate();
+    // _Password.currentState?.validate();
+    // _FName.currentState?.validate();
+    // _LName.currentState?.validate();
+  }
+  bool isValidEmail(String text){
+    String expr=r'[A-Za-z0-9]+@[A-Za-z]+.[A-Za-z]+';
+    RegExp regex=RegExp(expr);
+    return regex.hasMatch(text);
+  }
+  bool isValidPassword(String text){
+    return text.length>=8;
+  }
+  bool isValidName(String text){
+    return text.length>=3;
+  }
+  void _validateEmail() {
+    if (widget.email_controller.text.isEmpty) {
+      setState(() {
+        _emailError = 'Email is required';
+      });
+    } else if (!isValidEmail(widget.email_controller.text)) {
+      setState(() {
+        _emailError = 'Invalid Email';
+      });
+    } else {
+      setState(() {
+        _emailError = null;
+      });
+    }
+  }
+  void _validatePassword() {
+    if (widget.password_controller.text.isEmpty) {
+      setState(() {
+        _passwordError = 'Password is required';
+      });
+    } else if (!isValidPassword(widget.password_controller.text)) {
+      setState(() {
+        _passwordError = 'Invalid Password';
+      });
+    } else {
+      setState(() {
+        _passwordError = null;
+      });
+    }
+  }
+  void _validateFname() {
+    if (widget.firstname_controller.text.isEmpty) {
+      setState(() {
+        _fnameError = 'First Name is required';
+      });
+    } else if (!isValidName(widget.firstname_controller.text)) {
+      setState(() {
+        _fnameError = 'First Name is too short';
+      });
+    } 
+    else {
+      setState(() {
+        _fnameError = null;
+      });
+    }
+  }
+  void _validateLname(){
+    if (widget.lastname_controller.text.isEmpty) {
+      setState(() {
+        _lnameError = 'Last Name is required';
+      });
+    } else if (!isValidName(widget.lastname_controller.text)) {
+      setState(() {
+        _lnameError = 'Last Name is too short';
+      });
+    }
+    else{
+      setState(() {
+        _lnameError=null;
+      });
+    }
   }
   Future<Map<String,String?>> signup() async{
     final url = Uri.parse('https://home-rent.runasp.net/auth/sign-up');
@@ -47,7 +153,7 @@ class _RegisterFormState extends State<RegisterForm>{
       final userData=UserData.fromJson(responseData);
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final userProvider = Provider.of<UserProvider>(context,listen: false);
-      userProvider.setData(userData);
+      await userProvider.setData(userData);
       await authProvider.setToken(userData);
       return {};
     } else {
@@ -69,9 +175,8 @@ class _RegisterFormState extends State<RegisterForm>{
     }
   }
   void _openTermsAndConditions() {
-    // Handle the hypertext click action
+    //place holder action
     print('Terms and Conditions clicked!');
-    // You can navigate to a new screen or show a dialog here
   }
   @override
   Widget build(BuildContext context) {
@@ -84,34 +189,59 @@ class _RegisterFormState extends State<RegisterForm>{
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text_Field(
-              label: "First Name",
-              hintText: "Enter your first name",
+            TextFormField(
+              focusNode: _fnameFocusNode,
+              decoration: InputDecoration(
+                labelText: "First Name",
+                hintText: "Enter your first name",
+                errorText: _fnameError,
+              ),
               controller: widget.firstname_controller,
-              key: _FName
             ),
-            Text_Field(
-              label: "Last Name",
-              hintText: "Enter your last name",
+            SizedBox(height: screenHeight*0.015,),
+            TextFormField(
+              focusNode: _lnameFocusNode,
+              decoration: InputDecoration(
+                labelText: "Last Name",
+                hintText: "Enter your last name",
+                errorText: _lnameError,
+              ),
               controller: widget.lastname_controller,
-              key: _LName
             ),
-            Text_Field(
-              label: "Email/Username",
-              hintText: "Enter your email address or username",
+            SizedBox(height: screenHeight*0.015,),
+            TextFormField(
+              focusNode: _emailFocusNode,
+              decoration: InputDecoration(
+                labelText: "Email",
+                hintText: "Enter your email address",
+                errorText: _emailError,
+              ),
+              keyboardType: TextInputType.emailAddress,
               controller: widget.email_controller,
-              key: _Email
             ),
+            SizedBox(height: screenHeight*0.015,),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text_Field(
-                  label: "Password",
-                  hintText: "Enter your password",
+                TextFormField(
+                  focusNode: _passwordFocusNode,
+                  decoration: InputDecoration(
+                    labelText: "Password",
+                    hintText: "Enter your password",
+                    errorText: _passwordError,
+                    suffixIcon: IconButton(
+                      onPressed: (){
+                        setState(() {
+                          hidden=!hidden;
+                        });
+                      }, 
+                      icon: Icon(hidden? Icons.visibility: Icons.visibility_off,)
+                    )
+                  ),
                   controller: widget.password_controller,
-                  key: _Password,
-                  isKey: true,
+                  obscureText: hidden,
                 ),
+                SizedBox(height: screenHeight*0.01,),
                 PasswordBar(controller: widget.password_controller,),
                 SizedBox(height: screenHeight*0.01,),
               ],
@@ -161,11 +291,21 @@ class _RegisterFormState extends State<RegisterForm>{
                   }
                   var errors=await signup();
                   setState(() {
-                    _FName.currentState?.updateError(errors.containsKey('FirstName') ? 'First Name is short' : null);
-                    _LName.currentState?.updateError(errors.containsKey('LastName') ? 'Last Name is short' : null);
-                    _Email.currentState?.updateError(errors.containsKey('Email') ? 'Invalid Email' : null);
-                    _Password.currentState?.updateError(errors.containsKey('Password') ? 'Invalid Password' : null);
+                    _fnameError=errors.containsKey('FirstName') ? 'First Name is short' : null;
+                    _lnameError=errors.containsKey('LastName') ? 'Last Name is short' : null;
+                    _emailError=errors.containsKey('Email') ? 'Invalid Email' : null;
+                    _passwordError=errors.containsKey('Password') ? 'Invalid Password' : null;
+                    // _FName.currentState?.updateError(errors.containsKey('FirstName') ? 'First Name is short' : null);
+                    // _LName.currentState?.updateError(errors.containsKey('LastName') ? 'Last Name is short' : null);
+                    // _Email.currentState?.updateError(errors.containsKey('Email') ? 'Invalid Email' : null);
+                    // _Password.currentState?.updateError(errors.containsKey('Password') ? 'Invalid Password' : null);
                   });
+                  if (!isChecked) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Agree to the rules first'))
+                    );
+                    return;
+                  }
                   if(errors.isEmpty){
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Sign Up success'))

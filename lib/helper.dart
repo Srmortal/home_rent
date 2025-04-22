@@ -15,6 +15,10 @@ Alignment getAlignmentFromDegrees(double degrees) {
   double y = sin(radians);
   return Alignment(-x, y);
 }
+Color? getRandomColor(String? seed){
+  final hash=seed?.hashCode.abs();
+  return hash!=null? HSLColor.fromAHSL(1, (hash%360).toDouble(), 0.7, 0.6).toColor():Colors.black;
+}
 class Root{
   static const Color primary_color_dark=Color(0xff6a11cb),
   primary_hover_dark=Color(0xff5211a8),
@@ -36,13 +40,13 @@ class Root{
 }
 class Appartment {
   final String id;
-  final Image? image;
+  Image? image;
   final String priceTag,address;
-  final int bedCount,bathCount;
-  final int? carCount;
-  final String space;
-  final String? priceCut,description;
-  const Appartment(this.id, 
+  int bedCount,bathCount;
+  int? carCount;
+  String space;
+  String? priceCut,description;
+  Appartment(this.id, 
   {
     this.priceCut,
     this.carCount,
@@ -75,7 +79,7 @@ class UserData {
     required this.token,
     required this.refreshtoken,
     required this.refreshtokenexpiration,
-    required this.expireIn
+    required this.expireIn,
   });
   factory UserData.fromJson(Map<String,dynamic> json){
     return UserData(
@@ -110,10 +114,18 @@ class ImageUploader{
       throw Exception('An unexpected error occurred: $e');
     }
   }
-  Future<String?> uploadImage(File ImageFile,String userId) async{
+  Future<String?> uploadImage({
+    required File ImageFile,
+    required String ID,
+    required String UploadType,
+    String? customPath
+  }) async{
     try {
-      String filename='${DateTime.now().microsecondsSinceEpoch}.jpg';
-      Reference storageref=_storage.ref().child('user_images/$userId/$filename');
+      final timestamp=DateTime.now().microsecondsSinceEpoch;
+      final extension=ImageFile.path.split('.').last;
+      String filename='${UploadType}_$timestamp.$extension';
+      final path=customPath??'$UploadType/$ID/$filename';
+      Reference storageref=_storage.ref().child(path);
       UploadTask uploadTask;
       if(kIsWeb){
         Uint8List bytes=await ImageFile.readAsBytes();

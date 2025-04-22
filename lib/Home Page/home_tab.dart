@@ -12,7 +12,6 @@ class HomeTabState extends State<HomeTab>{
   @override
   void initState() {
     super.initState();
-    // Fetch apartments when the widget is initialized
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final homeProvider = Provider.of<AppartmentProvider>(context, listen: false);
       homeProvider.fetchAppartments();

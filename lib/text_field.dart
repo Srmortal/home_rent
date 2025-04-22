@@ -2,16 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:home_rent/helper.dart';
-// ignore: non_constant_identifier_names
-TextInputType type_getter(String type){
-  if (type == "email") return TextInputType.emailAddress;
-  if (type == "number") return TextInputType.number;
-  return TextInputType.text;
-}
 
 class Text_Field extends StatefulWidget{
   final String? hintText;
-  final String label,type;
+  final String label;
+  final TextInputType type;
   final TextEditingController controller;
   final EdgeInsets padding;
   final double? fontSize;
@@ -21,7 +16,7 @@ class Text_Field extends StatefulWidget{
     super.key,
     required this.label,
     this.hintText,
-    this.type="Text",
+    this.type=TextInputType.text,
     required this.controller, 
     this.padding=const EdgeInsets.symmetric(vertical: 10), 
     this.fontSize, 
@@ -71,6 +66,7 @@ class Text_FieldState extends State<Text_Field>{
       padding: widget.padding,
       child: TextFormField(
         style: TextStyle(
+          color: Colors.white,
           fontSize: widget.fontSize ?? rem(context, 0.9)
         ),
         obscureText: (ishidden&&widget.isKey),
@@ -85,7 +81,7 @@ class Text_FieldState extends State<Text_Field>{
             icon: Icon(ishidden? Icons.visibility: Icons.visibility_off,),
           ):null,
         ),
-        keyboardType: type_getter(widget.type),
+        keyboardType: widget.type,
         maxLines: widget.maxlines,
       ),
     );
